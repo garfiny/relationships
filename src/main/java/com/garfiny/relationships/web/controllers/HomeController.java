@@ -1,4 +1,4 @@
-package com.garfiny.relationships;
+package com.garfiny.relationships.web.controllers;
 
 import java.text.DateFormat;
 import java.util.Date;
