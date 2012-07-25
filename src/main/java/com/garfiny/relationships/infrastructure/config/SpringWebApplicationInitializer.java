@@ -23,7 +23,7 @@ public class SpringWebApplicationInitializer implements WebApplicationInitialize
 		// Create the 'root' Spring application context
 		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
 		rootContext.register(ApplicationConfig.class, MvcConfig.class);
-		rootContext.scan("com.garfiny.relationships");
+		rootContext.scan("com.garfiny.relationships.infrastructure.config");
 //		rootContext.getEnvironment().setDefaultProfiles("embedded");
 		
 		// Manage the lifecycle of the root application context

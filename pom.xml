@@ -35,7 +35,7 @@
 		<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>${org.springframework.version}</version>
+            <version>${org.springframework-version}</version>
         </dependency>
 		
 		<dependency>
@@ -102,29 +102,41 @@
 		</dependency>
 				
 		<!-- Servlet -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>javax.servlet</groupId> -->
-<!-- 			<artifactId>servlet-api</artifactId> -->
-<!-- 			<version>3.0-alpha-1</version> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>javax.servlet.jsp</groupId> -->
-<!-- 			<artifactId>jsp-api</artifactId> -->
-<!-- 			<version>2.1</version> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>javax.servlet</groupId> -->
-<!-- 			<artifactId>jstl</artifactId> -->
-<!-- 			<version>1.2</version> -->
-<!-- 		</dependency> -->
-        <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-        </dependency>
-	
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>el-api</artifactId>
+			<version>2.2</version>
+			<scope>provided</scope>
+		</dependency>
+<!--         <dependency> -->
+<!--             <groupId>javax</groupId> -->
+<!--             <artifactId>javaee-web-api</artifactId> -->
+<!--             <version>6.0</version> -->
+<!--         </dependency> -->
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-api</artifactId>
+			<version>2.0.0-b10</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -180,6 +192,14 @@
                 </configuration>
             </plugin>
             <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+				    <failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
@@ -187,6 +207,25 @@
                     <mainClass>org.test.int1.Main</mainClass>
                 </configuration>
             </plugin>
+            <!-- jboss as plugin -->
+<!--             <plugin> -->
+<!-- 	            <groupId>org.jboss.as.plugins</groupId> -->
+<!-- 	            <artifactId>jboss-as-maven-plugin</artifactId> -->
+<!-- 	            <version>7.1.1.Final</version> -->
+<!-- 			<executions> -->
+<!-- 				<execution> -->
+<!-- 				<phase>install</phase> -->
+<!-- 				<goals> -->
+<!-- 					<goal>deploy</goal> -->
+<!-- 				</goals> -->
+<!-- 				</execution> -->
+<!-- 			</executions> -->
+<!-- 			<configuration> -->
+<!-- 				<hostName>localhost</hostName> -->
+<!-- 				<port>9999</port> -->
+<!-- 			</configuration> -->
+<!--             </plugin> -->
+            
         </plugins>
     </build>
     <repositories>

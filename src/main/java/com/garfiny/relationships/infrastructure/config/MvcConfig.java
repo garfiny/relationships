@@ -2,6 +2,8 @@ package com.garfiny.relationships.infrastructure.config;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -14,18 +16,21 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @EnableWebMvc
-@ComponentScan("com.garfiny.relationships")
+@ComponentScan("com.garfiny.relationships.web.controllers")
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
-	@Inject
-	private Environment environment;
+	private static final Logger logger = LoggerFactory.getLogger(MvcConfig.class);
+	
+//	@Inject
+//	private Environment environment;
 
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-	}
+//	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/**");
+//	}
 	
 	@Bean
 	public ViewResolver viewResolver() {
+		logger.info("================================= loading view resolver============================");
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		viewResolver.setSuffix(".jsp");
 		viewResolver.setPrefix("/WEB-INF/views/");
