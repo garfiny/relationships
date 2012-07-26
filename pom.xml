@@ -136,6 +136,11 @@
 			<version>2.0.0-b10</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+		    <groupId>org.sitemesh</groupId>
+		    <artifactId>sitemesh</artifactId>
+		    <version>3.0-alpha-1</version>
+		</dependency>
 
 		<!-- Test -->
         <dependency>
@@ -164,6 +169,12 @@
         </dependency>
 	</dependencies>
     <build>
+	<resources>
+		<resource>
+			<directory>src/main/resources</directory>
+			<filtering>true</filtering>
+		</resource>
+	</resources>
         <plugins>
             <plugin>
                 <artifactId>maven-eclipse-plugin</artifactId>
@@ -206,6 +217,27 @@
                 <configuration>
                     <mainClass>org.test.int1.Main</mainClass>
                 </configuration>
+            </plugin>
+            <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>findbugs-maven-plugin</artifactId>
+		<version>2.5</version>
+            </plugin>
+            <plugin>
+	        <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>2.0.1</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <propertyFile>liquibase.properties</propertyFile>
+                        </configuration>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                   </execution>
+                </executions>
             </plugin>
             <!-- jboss as plugin -->
 <!--             <plugin> -->
