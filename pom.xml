@@ -9,13 +9,14 @@
 	<version>1.0.0-BUILD-SNAPSHOT</version>
 	<properties>
 		<java-version>1.7</java-version>
-		<org.springframework-version>3.1.0.RELEASE</org.springframework-version>
+		<org.springframework-version>3.1.1.RELEASE</org.springframework-version>
+		<org.springframework-security-version>3.1.1.RELEASE</org.springframework-security-version>
 		<org.aspectj-version>1.6.9</org.aspectj-version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 	</properties>
-	<dependencies>
+    <dependencies>
 		<!-- Spring -->
-		<dependency>
+        <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework-version}</version>
@@ -37,7 +38,40 @@
             <artifactId>spring-web</artifactId>
             <version>${org.springframework-version}</version>
         </dependency>
-		
+
+        <!-- spring security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${org.springframework-security-version}</version>
+		</dependency> 
+        <dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${org.springframework-security-version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${org.springframework-security-version}</version>
+        </dependency>
+<!--     <dependency> -->
+<!--         <groupId>org.springframework.security</groupId> -->
+<!--         <artifactId>spring-security-acl</artifactId> -->
+<!--         <version>${spring-security.version}</version> -->
+<!--     </dependency> -->
+<!--     <dependency> -->
+<!--         <groupId>org.springframework.security</groupId> -->
+<!--         <artifactId>spring-security-taglibs</artifactId> -->
+<!--         <version>${spring-security.version}</version> -->
+<!--     </dependency> -->
+		 <!-- spring security oauth -->
+        <dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth</artifactId>
+			<version>1.0.0.M4</version>
+        </dependency> 
+	
 		<dependency>
 		    <groupId>cglib</groupId>
 		    <artifactId>cglib</artifactId>
@@ -218,13 +252,15 @@
                     <mainClass>org.test.int1.Main</mainClass>
                 </configuration>
             </plugin>
+            
             <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>findbugs-maven-plugin</artifactId>
-		<version>2.5</version>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.5</version>
             </plugin>
+            
             <plugin>
-	        <groupId>org.liquibase</groupId>
+	           <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>2.0.1</version>
                 <executions>
