@@ -8,6 +8,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -36,6 +40,15 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		viewResolver.setPrefix("/WEB-INF/views/");
 		return viewResolver;
 	}
+	
+//	@Bean
+//	public FilterChainProxy springSecurityFilterChain() throws Exception {
+//	    logger.info("================================Create embedded Security Filter Chain=================");
+//	    SecurityFilterChain chain = 
+//	    		new DefaultSecurityFilterChain(new AntPathRequestMatcher("/**"), filterSecurityInterceptor());
+//	    
+//	    return new FilterChainProxy(chain);
+//	}
 	
 	// implementing WebMvcConfigurer
 

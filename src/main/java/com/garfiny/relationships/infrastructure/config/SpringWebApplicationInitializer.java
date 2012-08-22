@@ -20,13 +20,13 @@ public class SpringWebApplicationInitializer implements WebApplicationInitialize
 	@Override
 	public void onStartup(ServletContext container) throws ServletException {
 		
-		logger.info("Relationships Application On Startup....................");
+		logger.info("========================Relationships Application On Startup=================================");
 		
 		// Create the 'root' Spring application context
 		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-		rootContext.register(ApplicationConfig.class, MvcConfig.class);
+//		rootContext.register(ApplicationConfig.class, MvcConfig.class);
 		rootContext.scan("com.garfiny.relationships.infrastructure.config");
-//		rootContext.getEnvironment().setDefaultProfiles("embedded");
+		rootContext.getEnvironment().setDefaultProfiles("embedded");
 		
 		// Manage the lifecycle of the root application context
 		container.addListener(new ContextLoaderListener(rootContext));
@@ -43,7 +43,7 @@ public class SpringWebApplicationInitializer implements WebApplicationInitialize
 	    		container.addServlet("dispatcher", new DispatcherServlet(rootContext));
 	    dispatcher.setLoadOnStartup(1);
 	    dispatcher.addMapping("/");
-	    logger.info("Finished Web Application Config!");
+	    logger.info("===========================Finished Web Application Config!=====================================");
 	    
 //	    Set<String> mappingConflicts = dispatcher.addMapping("/");
 //	    if (!mappingConflicts.isEmpty()) {
@@ -60,8 +60,9 @@ public class SpringWebApplicationInitializer implements WebApplicationInitialize
 	}
 	
 	private void addSecurityAbility(ServletContext container) {
+		
 		Dynamic filter = container.addFilter("springSecurityFilterChain", DelegatingFilterProxy.class);
-		filter.addMappingForUrlPatterns(null, false, "/*");
+		filter.addMappingForUrlPatterns(null, true, "/*");
 	}
 
 }
