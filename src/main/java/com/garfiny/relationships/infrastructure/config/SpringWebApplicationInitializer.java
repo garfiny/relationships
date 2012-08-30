@@ -13,6 +13,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 
+
 public class SpringWebApplicationInitializer implements WebApplicationInitializer {
 
 	private static final Logger logger = LoggerFactory.getLogger(SpringWebApplicationInitializer.class);

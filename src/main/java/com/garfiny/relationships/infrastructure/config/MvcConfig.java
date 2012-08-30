@@ -40,16 +40,6 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		viewResolver.setPrefix("/WEB-INF/views/");
 		return viewResolver;
 	}
-	
-//	@Bean
-//	public FilterChainProxy springSecurityFilterChain() throws Exception {
-//	    logger.info("================================Create embedded Security Filter Chain=================");
-//	    SecurityFilterChain chain = 
-//	    		new DefaultSecurityFilterChain(new AntPathRequestMatcher("/**"), filterSecurityInterceptor());
-//	    
-//	    return new FilterChainProxy(chain);
-//	}
-	
 	// implementing WebMvcConfigurer
 
 //	public void addInterceptors(InterceptorRegistry registry) {

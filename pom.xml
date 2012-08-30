@@ -259,22 +259,22 @@
 				<version>2.5</version>
             </plugin>
             
-            <plugin>
-	           <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>2.0.1</version>
-                <executions>
-                    <execution>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <propertyFile>liquibase.properties</propertyFile>
-                        </configuration>
-                        <goals>
-                            <goal>update</goal>
-                        </goals>
-                   </execution>
-                </executions>
-            </plugin>
+<!--             <plugin> -->
+<!-- 	           <groupId>org.liquibase</groupId> -->
+<!--                 <artifactId>liquibase-maven-plugin</artifactId> -->
+<!--                 <version>2.0.1</version> -->
+<!--                 <executions> -->
+<!--                     <execution> -->
+<!--                         <phase>process-resources</phase> -->
+<!--                         <configuration> -->
+<!--                             <propertyFile>liquibase.properties</propertyFile> -->
+<!--                         </configuration> -->
+<!--                         <goals> -->
+<!--                             <goal>update</goal> -->
+<!--                         </goals> -->
+<!--                    </execution> -->
+<!--                 </executions> -->
+<!--             </plugin> -->
             <!-- jboss as plugin -->
 <!--             <plugin> -->
 <!-- 	            <groupId>org.jboss.as.plugins</groupId> -->

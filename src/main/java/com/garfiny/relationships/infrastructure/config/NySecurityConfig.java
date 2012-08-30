@@ -1,5 +1,6 @@
 package com.garfiny.relationships.infrastructure.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -10,15 +11,15 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.access.vote.AffirmativeBased;
 import org.springframework.security.access.vote.RoleVoter;
@@ -29,48 +30,62 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.encoding.Md5PasswordEncoder;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.access.expression.ExpressionBasedFilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.security.web.util.AntPathRequestMatcher;
 import org.springframework.security.web.util.RequestMatcher;
 
+import com.garfiny.relationships.infrastructure.config.annotation.Dev;
+import com.garfiny.relationships.infrastructure.config.annotation.Embedded;
+import com.garfiny.relationships.infrastructure.config.annotation.Production;
+
 @Configuration
-//@ImportResource("classpath:security.xml")
-public class SecurityConfig {
+public class NySecurityConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
+	@Inject
+	private Environment environment;
+	
+	@Value("${login_form_url}")
+	private String loginFormUrl;
 	
 	@Configuration
-	@Profile("embedded")
+	@Embedded
 	static class EmbeddedSecurityConfig {
 
-		@Inject
-		private Environment environment;
+		@Value("${login_form_url}")
+		private String loginFormUrl;
 		
 		@Bean
 		@Autowired
-		public FilterChainProxy springSecurityFilterChain(
-				FilterSecurityInterceptor filterSecurityInterceptor,
-				UsernamePasswordAuthenticationFilter formLoginFilter) throws Exception {
+		public FilterChainProxy springSecurityFilterChain(FilterSecurityInterceptor filterSecurityInterceptor,
+				UsernamePasswordAuthenticationFilter formLoginFilter,
+				ExceptionTranslationFilter exceptionTranslationFilter,
+				SecurityContextHolderAwareRequestFilter securityContextHolderAwareRequestFilter) throws Exception {
+			
 		    logger.info("================================Create Default Security Filter Chain=================");
-		    SecurityFilterChain chain = new DefaultSecurityFilterChain(
-		    		new AntPathRequestMatcher("/**"), filterSecurityInterceptor, formLoginFilter);
-
 //		    SecurityFilterChain chain = new DefaultSecurityFilterChain(new AntPathRequestMatcher("/**"),
-//					ChannelProcessingFilter
 //		            concurrentSessionFilter,
 //		            securityContextPersistenceFilter,
 //		            x509AuthenticationFilter,
@@ -80,14 +95,33 @@ public class SecurityConfig {
 //		            exceptionTranslationFilter,
 //		            filterSecurityInterceptor);
 		    
-		    return new FilterChainProxy(chain);
-
+		    List<SecurityFilterChain> filterChainList = new ArrayList<>();
+		    filterChainList.add(noneSecurityFilterChain());
+		    filterChainList.add(defaultFilterChain(filterSecurityInterceptor, formLoginFilter, exceptionTranslationFilter, securityContextHolderAwareRequestFilter));
+		    
+		    return new FilterChainProxy(filterChainList);
+		}
+		
+		private SecurityFilterChain defaultFilterChain(
+				FilterSecurityInterceptor filterSecurityInterceptor,
+				UsernamePasswordAuthenticationFilter formLoginFilter,
+				ExceptionTranslationFilter exceptionTranslationFilter,
+				SecurityContextHolderAwareRequestFilter securityContextHolderAwareRequestFilter) {
+			
+		    return new DefaultSecurityFilterChain(
+		    		new AntPathRequestMatcher("/**"), securityContextHolderAwareRequestFilter, 
+		    		exceptionTranslationFilter, filterSecurityInterceptor);			
+		}
+		
+		private SecurityFilterChain noneSecurityFilterChain() {
+			return new DefaultSecurityFilterChain(new AntPathRequestMatcher(loginFormUrl));
 		}
 		
 		@Bean
 		@Autowired
 		public FilterSecurityInterceptor filterSecurityInterceptor(
 				AuthenticationManager authenticationManager, AccessDecisionManager accessDecisionManager,
+				ExceptionTranslationFilter exceptionTranslationFilter,
 				SecurityExpressionHandler<FilterInvocation> securityExpressionHandler) throws Exception{
 			
 			FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
@@ -95,9 +129,8 @@ public class SecurityConfig {
 			filterSecurityInterceptor.setAccessDecisionManager(accessDecisionManager);
 			
 		    LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> map = new LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>();
-		    map.put(new AntPathRequestMatcher("/**"), 
-		    		Arrays.<ConfigAttribute>asList(
-		    				new org.springframework.security.access.SecurityConfig("isAuthenticated()")));
+//		    map.put(new AntPathRequestMatcher(loginFormUrl), Arrays.<ConfigAttribute>asList(new SecurityConfig("permitAll")));
+		    map.put(new AntPathRequestMatcher("/**"), Arrays.<ConfigAttribute>asList(new SecurityConfig("permitAll")));
 		    
 		    ExpressionBasedFilterInvocationSecurityMetadataSource ms = new ExpressionBasedFilterInvocationSecurityMetadataSource(map, securityExpressionHandler);
 		    filterSecurityInterceptor.setSecurityMetadataSource(ms);
@@ -114,18 +147,6 @@ public class SecurityConfig {
 //			((InMemoryUserDetailsManager)userDetailsService).setAuthenticationManager(authenticationManager);
 			return userDetailsService;
 		}
-		
-//		<bean id="formLoginFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
-//	    <property name="authenticationManager" ref="authenticationManager" />
-//	    <property name="authenticationSuccessHandler">
-//	        <bean class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-//	            <property name="defaultTargetUrl" value="/index.jsp" />
-//	        </bean>
-//	    </property>
-//	    <property name="sessionAuthenticationStrategy">
-//	        <bean class="org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy" />
-//	    </property>
-	//</bean>
 		
 		@Bean
 		public AuthenticationFailureHandler authenticationFailureHandler() {
@@ -167,8 +188,9 @@ public class SecurityConfig {
 	}
 	
 	@Configuration
-	@Profile("production")
-	static class ProductionSecurityConfig {
+	@Production
+	@Dev
+	static class StandardSecurityConfig {
 
 		@Inject
 		private Environment environment;
@@ -194,7 +216,7 @@ public class SecurityConfig {
 		
 		@Bean
 		public UserDetailsService userDetailsService() {
-			Properties users = new Properties();
+			List<UserDetails> users = new ArrayList<>(); 
 			UserDetailsService userDetailsService = new InMemoryUserDetailsManager(users);
 			// TODO check if We really need authentication manager 
 //			((InMemoryUserDetailsManager)userDetailsService).setAuthenticationManager(authenticationManager());
@@ -236,11 +258,11 @@ public class SecurityConfig {
 		}
 	}
 	
-	@Bean(name={"authenticationSuccessHandler"}, autowire=Autowire.BY_NAME)
+	@Bean(name="authenticationSuccessHandler")
 	public AuthenticationSuccessHandler authenticationSuccessHandler() {
 		SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 		// TODO replace this with default_login_success_url property
-		successHandler.setDefaultTargetUrl("/index.jsp");
+		successHandler.setDefaultTargetUrl("/");
 		return successHandler;
 	}
 	
@@ -265,6 +287,38 @@ public class SecurityConfig {
 		
 		return new DefaultWebSecurityExpressionHandler();
 	}
+	
+	@Bean
+	public AuthenticationEntryPoint authenticationEntryPoint() {
+		
+		return new LoginUrlAuthenticationEntryPoint(loginFormUrl);
+	}
+	
+    // ExceptionTranslationFilter
+	@Bean
+	@Autowired
+	public ExceptionTranslationFilter exceptionTranslationFilter(AccessDeniedHandler accessDeniedHandler, AuthenticationEntryPoint authenticationEntryPoint) {
+	    ExceptionTranslationFilter exceptionTranslationFilter = new ExceptionTranslationFilter(authenticationEntryPoint);
+	    exceptionTranslationFilter.setAccessDeniedHandler(accessDeniedHandler);
+	    exceptionTranslationFilter.afterPropertiesSet();
+	    return exceptionTranslationFilter;
+	}
+	
+	@Bean
+	public AccessDeniedHandler accessDeniedHandler() {
+		AccessDeniedHandlerImpl impl = new AccessDeniedHandlerImpl();
+		impl.setErrorPage(environment.getProperty("error_page"));
+		return impl;
+	}
+	
+	@Bean
+	public SecurityContextHolderAwareRequestFilter SecurityContextHolderAwareRequestFilter() {
+		return new SecurityContextHolderAwareRequestFilter();
+	}
+	
+	// TODO
+//	<global-method-security pre-post-annotations="enabled" />
+//	GlobalMethodSecurityBeanDefinitionParser
 	
 //	@Bean
 //	public FilterChainProxy springSecurityFilterChain() throws Exception {
